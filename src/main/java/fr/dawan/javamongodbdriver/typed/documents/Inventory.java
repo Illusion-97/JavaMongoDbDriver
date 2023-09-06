@@ -1,8 +1,6 @@
 package fr.dawan.javamongodbdriver.typed.documents;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.types.ObjectId;
 
 import java.util.List;

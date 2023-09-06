@@ -2,6 +2,9 @@ package fr.dawan.javamongodbdriver.typed;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.InsertManyResult;
 import com.mongodb.client.result.InsertOneResult;
 import fr.dawan.javamongodbdriver.conf.ConnexionManager;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/inventory")
@@ -69,5 +73,47 @@ public class InventoryController {
         Document document = new Document();
         document.append("item",item);
         return collection.find(document).into(new ArrayList<>());
+    }
+
+    @GetMapping("findByStatus/{status}/orByStockLt/{qte}")
+    public List<Inventory> findByStatusOrStockLessThan(@PathVariable int qte, @PathVariable String status) {
+        // db.inventory.find({$or : [{status: status}, {"instock.qty" : {$lt: qte}}]})
+
+
+        return collection
+                .find(Filters.or(
+                        Filters.eq("status",status),
+                        Filters.lt("instock.qty",qte)))
+                .into(new ArrayList<>());
+    }
+
+    @PostMapping("findFiltered")
+    public List<Inventory> findAllFiltered(@RequestBody Document filter, @RequestParam int page, @RequestParam int size) {
+        return collection.find(filter).skip(page * size).limit(size).into(new ArrayList<>());
+    }
+
+    @PostMapping("findFirstOne")
+    public Inventory findFirstOne(@RequestBody Document filter) {
+        // db.inventory.findOne({})
+        return collection.find(filter).first();
+    }
+
+    @PostMapping("findAllSortedByStock")
+    public List<Inventory> findAllSortedSyStock(@RequestBody Document filter) {
+        return collection.find(filter).sort(Sorts.ascending("instock.qty")).into(new ArrayList<>());
+    }
+
+    @GetMapping("/allItems")
+    public List<Inventory> findAllItems() {
+        return collection.find().projection(Projections.include("item")).into(new ArrayList<>());
+    }
+
+    @GetMapping("/allStockWithoutId")
+    public List<Inventory> findAllStockWithoutId() {
+        return collection.find().projection(
+                Projections.fields(
+                        Projections.include("item","instock"),
+                        Projections.excludeId())
+        ).into(new ArrayList<>());
     }
 }
