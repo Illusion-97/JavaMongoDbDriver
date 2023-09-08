@@ -4,6 +4,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.*;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertManyResult;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@RestController
+//@RestController
 @RequestMapping("/inventory")
 @Tag(name = "TYPED")
 public class InventoryController {
@@ -127,15 +128,49 @@ public class InventoryController {
         return collection.updateOne(filtre, Updates.inc("size.h",1));
     }
 
-
     @PutMapping("updateOneUpsert")
     public UpdateResult updateOneUpsert(@RequestBody UpdateDto updateDto){
-        return collection.updateOne(updateDto.filter(), updateDto.update(), new UpdateOptions().upsert(true));
+        return collection.updateOne(updateDto.filter(), updateDto.update());
     }
+
     @PutMapping("updateMany")
     public UpdateResult updateMany(@RequestBody Document filtre){
         return collection.updateMany(filtre, Updates.inc("size.h",1));
     }
 
+    @PutMapping("replaceOneUpsert")
+    public UpdateResult replaceOneUpsert(@RequestBody ReplaceDto replaceDto){
+        return collection.replaceOne(replaceDto.filter(), replaceDto.replace(), new ReplaceOptions().upsert(true));
+    }
+
+    @PutMapping("findOneAndUpdate")
+    public Inventory findOneAndUpdate(@RequestBody Document filtre){
+        return collection.findOneAndUpdate(filtre, Updates.inc("size.h",1));
+    }
+    @PutMapping("findOneAndReplaceUpsert")
+    public Inventory findOneAndReplaceUpsert(@RequestBody ReplaceDto replaceDto){
+        return collection.findOneAndReplace(replaceDto.filter(), replaceDto.replace(), new FindOneAndReplaceOptions().upsert(true));
+    }
+
+    @DeleteMapping("deleteOne")
+    public DeleteResult deleteOne(@RequestBody Document filter) {
+        return collection.deleteOne(filter);
+    }
+
+    @DeleteMapping("deleteMany")
+    public DeleteResult deleteMany(@RequestBody Document filter) {
+
+        return collection.deleteMany(filter);
+    }
+
+    @DeleteMapping("findOneAndDelete")
+    public Inventory findOneAndDelete(@RequestBody Document filter) {
+        return collection.findOneAndDelete(filter);
+    }
+
+    @DeleteMapping("findOneAndDeleteReturnId")
+    public Inventory findOneAndDeleteReturnId(@RequestBody Document filter) {
+        return collection.findOneAndDelete(filter, new FindOneAndDeleteOptions().projection(Projections.include("_id")));
+    }
 
 }

@@ -5,7 +5,9 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoIterable;
+import org.bson.Document;
 
 public class ConnexionManager {
     // "mongodb://<username>:<password>@<hostname>:<port>/?authSource=<authenticationDb>"
@@ -36,5 +38,8 @@ public class ConnexionManager {
         return getClient().listDatabaseNames();
     }
 
+    public static MongoCollection<Document> getCollection(String collectionName) {
+        return getClient().getDatabase(DB_NAME).getCollection(collectionName);
+    }
 
 }
