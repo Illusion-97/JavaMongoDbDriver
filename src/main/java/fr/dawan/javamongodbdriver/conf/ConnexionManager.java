@@ -13,7 +13,7 @@ public class ConnexionManager {
     // "mongodb://<username>:<password>@<hostname>:<port>/?authSource=<authenticationDb>"
     private static final ConnectionString CONNECTION_STRING = new ConnectionString("mongodb://localhost:27017");
     private static final MongoCredential MONGO_CREDENTIAL = MongoCredential.createCredential("","", "".toCharArray());
-    private static String DB_NAME = "java-mongo-driver";
+    private static String DB_NAME = "java-mongo-driverjava-mongo-driver";
     private static MongoClient client;
 
     public static MongoClient getClient() {
